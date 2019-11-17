@@ -28,10 +28,12 @@ public class MyBot {
         Map<EntityId, Data> entityData = new Map<EntityId, Data>();
         final int distance = 7;
         final int minPrice;
+        ArrayList<MapCell> reservedCells;
         for (;;) {
             game.updateFrame();
             final Player me = game.me;
             final GameMap gameMap = game.gameMap;
+            reservedCells = new ArrayList<>();
 
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
@@ -59,6 +61,13 @@ public class MyBot {
                                 continue;
                             } else {
                                 direction = gameMap.naiveNavigate(ship, targetCell.position);
+                                Position nPosition = ship.position.directionalOffset(direction);
+                                if(isReserved(reservedCells, nPosition)){
+                                    commandQueue.add(ship.stayStill());
+                                    continue;
+                                }
+                                reservedCells.add(ship.position.directionalOffset(direction));
+                                reservedCells.add(nPosition);
                             }
                         }
                         break;
@@ -90,6 +99,15 @@ public class MyBot {
 
             game.endTurn(commandQueue);
         }
+    }
+
+    public static boolean isReserved(ArrayList<MapCell> cells, Position position){
+        for (final MapCell cell : cells) {
+            if(position.equeal(cell)){
+                return true;
+            }
+        }
+        false;
     }
 
     public static int getFildSum(Position pose, GameMap map, int height, int width)
