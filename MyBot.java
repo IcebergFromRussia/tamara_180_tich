@@ -54,6 +54,7 @@ public class MyBot {
                         entityData1.put(getPosKey(ship.position), goForHalite);
                         Data = goForHalite;
                     }
+                    Log.log("состояние" + Data);
                     switch (Data)
                     {
                         case goHome:
@@ -66,9 +67,14 @@ public class MyBot {
                                 if(isReserved(reservedCells, nPosition)){
                                     commandQueue.add(ship.stayStill());
                                     entityData2.put(getPosKey(ship.position), goHome);
+                                    Log.log("стоять на месте" + getPosKey(ship.position));
+                                    continue;
                                 }
+
+                                Log.log("идти домой" + getPosKey(nPosition));
                                 reservedCells.add(gameMap.at(nPosition));
                                 entityData2.put(getPosKey(ship.position), goHome);
+                                commandQueue.add(ship.move(direction));
 
                                 continue;
                             }
@@ -77,15 +83,24 @@ public class MyBot {
                         break;
                         case goForHalite:
                         {
+
                             Integer state = 1;
                             if(ship.halite > Constants.MAX_HALITE * 0.7){
                                 state = 2;
-                                Log.log("иди домой");
+                                Log.log("иди домо" + getPosKey(ship.position));
+                            } else {
+                                if(gameMap.at(ship.position).halite > 200){
+                                    Log.log("стоять на месте" + getPosKey(ship.position));
+                                    commandQueue.add(ship.stayStill());
+                                    entityData2.put(getPosKey(ship.position), state);
+                                    continue;
+                                }
                             }
                             MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3, targetCells);
                             targetCells.add(targetCell);
                             if(targetCell.position.equals(ship.position)){
-                                //стоять на месте
+
+                                Log.log("стоять на месте" + getPosKey(ship.position));
                                 commandQueue.add(ship.stayStill());
                                 entityData2.put(getPosKey(ship.position), state);
                                 continue;
@@ -98,9 +113,11 @@ public class MyBot {
                                         commandQueue.add(ship.move(randomDirection));
                                         nPosition = ship.position.directionalOffset(randomDirection);
                                         reservedCells.add(gameMap.at(nPosition));
+                                        Log.log("случайная позиция" + getPosKey(nPosition));
                                         //случайная позиция
                                         entityData2.put(getPosKey(nPosition), state);
                                     } else {
+                                        Log.log("стоять на месте" + getPosKey(nPosition));
                                         //стоять на месте
                                         commandQueue.add(ship.stayStill());
                                         entityData2.put(getPosKey(ship.position), state);
@@ -108,6 +125,8 @@ public class MyBot {
                                     continue;
                                 }
                                 //двигаться в сторону таргета
+                                Log.log("двигаться в сторону таргета" + getPosKey(nPosition));
+                                Log.log("двигаться в сторону таргета" + getPosKey(targetCell.position));
                                 entityData2.put(getPosKey(nPosition), state);
                                 reservedCells.add(gameMap.at(nPosition));
                             }
@@ -115,7 +134,6 @@ public class MyBot {
                         break;
                     }
                     if(direction != null){
-
                         commandQueue.add(ship.move(direction));
                     }
 //                } else {
@@ -168,37 +186,37 @@ public class MyBot {
 //        }
 //        return sum;
 //    }
-    public static int getFildSum(Position pose, GameMap map, int height, int width)
-    {
-        // x - width; y - height;
-        int x = pose.x - (width / 2);
-        int y = pose.y - (height / 2);
-        int sum = 0;
-        for (int i = x; x + width; i++)
-        {
-            for (int j = y; y + height; j++)
-            {
-                Position p = map.normalize(new Position(i, j));
-                MapCell mc = map.at(p);
-                sum = sum + mc.halite;
-            }
-        }
-        return sum;
-    }
+//    public static int getFildSum(Position pose, GameMap map, int height, int width)
+//    {
+//        // x - width; y - height;
+//        int x = pose.x - (width / 2);
+//        int y = pose.y - (height / 2);
+//        int sum = 0;
+//        for (int i = x; x + width; i++)
+//        {
+//            for (int j = y; y + height; j++)
+//            {
+//                Position p = map.normalize(new Position(i, j));
+//                MapCell mc = map.at(p);
+//                sum = sum + mc.halite;
+//            }
+//        }
+//        return sum;
+//    }
 
-    public static TreeMap<int, Position> getCells(GameMap map, int height, int width)
-    {
-        TreeMap<int, Position> tm = new TreeMap<int, Position>();
-        for (int i = 0; map.width - 1; i++)
-        {
-            for (int j = 0; map.height - 1; j++)
-            {
-                Position p = new Position(i, j);
-                tm.put(getFildSum(p, map, height, width), p);
-            }
-        }
-        return tm;
-    }
+//    public static TreeMap<int, Position> getCells(GameMap map, int height, int width)
+//    {
+//        TreeMap<int, Position> tm = new TreeMap<int, Position>();
+//        for (int i = 0; map.width - 1; i++)
+//        {
+//            for (int j = 0; map.height - 1; j++)
+//            {
+//                Position p = new Position(i, j);
+//                tm.put(getFildSum(p, map, height, width), p);
+//            }
+//        }
+//        return tm;
+//    }
 
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
         LinkedList<MapCell> nearCells = new LinkedList<>();
