@@ -38,6 +38,32 @@ public class MyBot {
                 if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
                     final Direction randomDirection = Direction.ALL_CARDINALS.get(rng.nextInt(4));
                     commandQueue.add(ship.move(randomDirection));
+
+
+                    Data = entityData.getOrDefault(ship.EntityId, null);
+                    if (Data != null)
+                    {
+                        switch (Data.State)
+                        {
+                            case MINING:
+                            {
+
+                            }
+                            break;
+                            case GO_HOME:
+                            {
+
+                            }
+                            break;
+                            case NEW:
+                            {
+
+                            }
+                            break;
+                        }
+                    }
+
+
                 } else {
                     commandQueue.add(ship.stayStill());
                 }
