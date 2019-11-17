@@ -110,7 +110,7 @@ public class MyBot {
             for (int j = 0; map.height - 1; j++)
             {
                 Position p = new Position(i, j);
-                ss.Add(new Sumpose(getFildSum(p, map, height, width), p);
+                ss.Add(new Sumpose(getFildSum(p, map, height, width), p));
             }
         }
         return ss;
@@ -126,9 +126,9 @@ public class MyBot {
         return nearCells;
     }
 
-    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, min price){
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, int price){
         MapCell maxCell;
-        final GameMap gameMap = game.gameMap
+        final GameMap gameMap = game.gameMap;
         for (final MapCell cell : cells) {
             if(maxCell == null){
                 maxCell = cell;
