@@ -41,7 +41,7 @@ public class MyBot {
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
             for (final Ship ship : me.ships.values()) {
-                if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
+//                if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
                     Direction direction = null;
 //                    commandQueue.add(ship.move(randomDirection));
 
@@ -54,6 +54,19 @@ public class MyBot {
                     }
                     switch (Data)
                     {
+                        case goHome:
+                        {
+                            if(me.shipyard.position.equals(ship.position))
+                            {
+                                entityData.remove(ship.id);
+                                entityData.put(ship.id, goForHalite);
+                            } else{
+                                direction = gameMap.naiveNavigate(ship, me.shipyard.position);
+                                continue;
+                            }
+
+                        }
+                        break;
                         case goForHalite:
                         {
                             if(ship.halite > Constants.MAX_HALITE * 0.7){
@@ -84,19 +97,14 @@ public class MyBot {
                             }
                         }
                         break;
-                        case 2:
-                        {
-                            direction = gameMap.naiveNavigate(ship, me.shipyard.position);
-                        }
-                        break;
                     }
                     if(direction != null){
 
                         commandQueue.add(ship.move(direction));
                     }
-                } else {
-                    commandQueue.add(ship.stayStill());
-                }
+//                } else {
+//                    commandQueue.add(ship.stayStill());
+//                }
             }
 
             if (
