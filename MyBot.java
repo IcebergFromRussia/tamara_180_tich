@@ -42,7 +42,7 @@ public class MyBot {
                     Direction direction;
 //                    commandQueue.add(ship.move(randomDirection));
 
-
+                    Log.log("Проверка корабля");
                     Data = entityData.getOrDefault(ship.EntityId, null);
                     if (Data != null)
                     {
@@ -54,6 +54,7 @@ public class MyBot {
                         {
                             if(ship.halite > Constants.MAX_HALITE * 07){
                                 Data.State = GO_HOME;
+                                Log.log("иди домой");
                             }
                             MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE * 0.3);
                             if(targetCell.position.equals(ship.position)){
@@ -110,37 +111,37 @@ public class MyBot {
         false;
     }
 
-    public static int getFildSum(Position pose, GameMap map, int height, int width)
-    {
-        // x - width; y - height;
-        int x = pose.x - (width / 2);
-        int y = pose.y - (height / 2);
-        int sum = 0;
-        for (int i = x; x + width; i++)
-        {
-            for (int j = y; y + height; j++)
-            {
-                Position p = map.normalize(new Position(i, j));
-                MapCell mc = map.at(p);
-                sum = sum + mc.halite;
-            }
-        }
-        return sum;
-    }
+//    public static int getFildSum(Position pose, GameMap map, int height, int width)
+//    {
+//        // x - width; y - height;
+//        int x = pose.x - (width / 2);
+//        int y = pose.y - (height / 2);
+//        int sum = 0;
+//        for (int i = x; x + width; i++)
+//        {
+//            for (int j = y; y + height; j++)
+//            {
+//                Position p = map.normalize(new Position(i, j));
+//                MapCell mc = map.at(p);
+//                sum = sum + mc.halite;
+//            }
+//        }
+//        return sum;
+//    }
 
-    public static SortedSet<Sumpose> getCells(GameMap map, int height, int width)
-    {
-        SortedSet<Sumpose> ss = new SortedSet<Sumpose>();
-        for (int i = 0; map.width - 1; i++)
-        {
-            for (int j = 0; map.height - 1; j++)
-            {
-                Position p = new Position(i, j);
-                ss.Add(new Sumpose(getFildSum(p, map, height, width), p));
-            }
-        }
-        return ss;
-    }
+//    public static SortedSet<Sumpose> getCells(GameMap map, int height, int width)
+//    {
+//        SortedSet<Sumpose> ss = new SortedSet<Sumpose>();
+//        for (int i = 0; map.width - 1; i++)
+//        {
+//            for (int j = 0; map.height - 1; j++)
+//            {
+//                Position p = new Position(i, j);
+//                ss.Add(new Sumpose(getFildSum(p, map, height, width), p));
+//            }
+//        }
+//        return ss;
+//    }
 
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
         LinkedList<MapCell> nearCells = new LinkedList<>();
@@ -184,22 +185,22 @@ public class MyBot {
 //     }
 }
 
-public class Sumpose implements Comparable<Sumpose>
-{
-    public int sum = 0;
-    public Position pose = null;
-
-    public Sumpose(int sum, Position pose)
-    {
-        this.sum = sum;
-        this.pose = pose;
-    }
-
-    public int compareTo(Sumpose sp)
-    {
-        return sp.sum - sum;
-    }
-}
+//public class Sumpose implements Comparable<Sumpose>
+//{
+//    public int sum = 0;
+//    public Position pose = null;
+//
+//    public Sumpose(int sum, Position pose)
+//    {
+//        this.sum = sum;
+//        this.pose = pose;
+//    }
+//
+//    public int compareTo(Sumpose sp)
+//    {
+//        return sp.sum - sum;
+//    }
+//}
 
 public enum ShipState
 {
