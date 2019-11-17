@@ -5,7 +5,7 @@ import hlt.*;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.SortedSet;
+import java.util.*;
 
 public class MyBot {
     public static void main(final String[] args) {
@@ -15,7 +15,7 @@ public class MyBot {
         } else {
             rngSeed = System.nanoTime();
         }
-        final Random rng = new Random(rngSeed);
+        //final Random rng = new Random(rngSeed);
 
         Game game = new Game();
         // At this point "game" variable is populated with initial map data.
@@ -52,7 +52,7 @@ public class MyBot {
                     {
                         case MINING:
                         {
-                            if(ship.halite > Constants.MAX_HALITE * 07){
+                            if(ship.halite > Constants.MAX_HALITE * 0.7){
                                 Data.State = GO_HOME;
                                 Log.log("иди домой");
                             }
@@ -175,7 +175,7 @@ public class MyBot {
 //            positions[y] = new Position[distance];
 //         }
 //         // хранить тут
-//         //position.halit - 2 * map.calculateDistance(startP, position) * Constants.MAX_HALITE / 10
+//         //position.halite - 2 * map.calculateDistance(startP, position) * Constants.MAX_HALITE / 10
 //         int[][] price = new int[distance][];
 //         for (int y = 0; y < distance; ++y) {
 //                     price[y] = new price[distance];
@@ -183,6 +183,11 @@ public class MyBot {
 
 //         if(){}
 //     }
+
+    public LocalPlaner()
+    {
+        
+    }
 }
 
 //public class Sumpose implements Comparable<Sumpose>
