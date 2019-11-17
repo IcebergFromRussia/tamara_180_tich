@@ -25,6 +25,8 @@ public class MyBot {
 
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
+        Map<EntityId, Data> entityData = new Map<EntityId, Data>();
+
         for (;;) {
             game.updateFrame();
             final Player me = game.me;
@@ -112,3 +114,16 @@ public class Sumpose implements Comparable<Sumpose>
         return sp.sum - sum;
     }
 }
+
+public enum ShipState
+{
+    NEW(0),
+    MINING(1),
+    GO_HOME(2)
+}
+
+public class Data
+{
+    public int State = NEW;
+}
+
