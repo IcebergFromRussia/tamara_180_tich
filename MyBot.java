@@ -27,7 +27,7 @@ public class MyBot {
 
         Map<EntityId, Data> entityData = new Map<EntityId, Data>();
         final int distance = 7;
-        final int minPrice
+        final int minPrice;
         for (;;) {
             game.updateFrame();
             final Player me = game.me;
@@ -177,9 +177,19 @@ public class Sumpose implements Comparable<Sumpose>
 
 public enum ShipState
 {
-    NEW('0'),
-    MINING('1'),
-    GO_HOME('2');
+    NEW("0"),
+    MINING("1"),
+    GO_HOME("2");
+
+    private String title;
+
+    ShipState(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }
 
 public class Data
