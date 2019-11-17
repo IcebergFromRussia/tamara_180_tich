@@ -28,7 +28,6 @@ public class MyBot {
 
         HashMap<EntityId, Integer> entityData = new HashMap<EntityId, Integer>();
         HashMap<EntityId, Position> entityPosition = new HashMap<EntityId, Position>();
-        final int minPrice;
         final int distance = 13;
         final int minPrice = 20;
         ArrayList<MapCell> reservedCells;
@@ -37,6 +36,7 @@ public class MyBot {
             final Player me = game.me;
             final GameMap gameMap = game.gameMap;
             reservedCells = new ArrayList<>();
+            entityPosition = new HashMap<EntityId, Position>();
 
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
@@ -74,7 +74,7 @@ public class MyBot {
                                 entityData.put(ship.id, goHome);
                                 Log.log("иди домой");
                             }
-                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3);
+                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3, entityPosition);
                             if(targetCell.position.equals(ship.position)){
                                 commandQueue.add(ship.stayStill());
                                 continue;
@@ -93,7 +93,7 @@ public class MyBot {
                                     continue;
                                 }
                                 reservedCells.add(gameMap.at(nPosition));
-                                entityPosition.put(ship.id, position);
+                                entityPosition.put(ship.id, nPosition);
                             }
                         }
                         break;
