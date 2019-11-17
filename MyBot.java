@@ -30,7 +30,7 @@ public class MyBot {
         HashMap<String, Integer> entityData1 = new HashMap<String, Integer>();
         HashMap<String, Position> targetData1 = new HashMap<String, Position>();
 
-        int distance = 20;
+        int distance = 5;
         final int minPrice = 100;
         ArrayList<MapCell> reservedCells;
         ArrayList<MapCell> targetCells;
@@ -45,6 +45,9 @@ public class MyBot {
 
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
+            if( game.turnNumber % 25 == 0){
+                distance += 5;
+            }
             for (final Ship ship : me.ships.values()) {
 //                if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
                     Direction direction = null;
