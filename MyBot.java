@@ -88,15 +88,46 @@ public class MyBot {
     }
 
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
-        ArrayList<cell> nearCells = new ArrayList<>();
+        LinkedList<MapCell> nearCells = new LinkedList<>();
         for (final MapCell cell : map.cells) {
-            if(map.calculateDistance(cell.position, entity.position) > distance){
+            if(map.calculateDistance(cell.position, entity.position) < distance){
                 nearCells.add(cell);
             }
         }
         return nearCells;
     }
-}
+
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Position base, min price){
+        MapCell maxCell;
+        final GameMap gameMap = game.gameMap
+        for (final MapCell cell : cells) {
+            if(maxCell == null){
+                maxCell = cell;
+            }
+            if(cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base, ship.position) * Constants.MAX_HALITE / 10){
+                maxCell = cell;
+            }
+        }
+        return maxCell;
+    }
+
+    //public static MapCell[][] getBfs(Position startP, GameMap map, int distance){
+    //    LinkedList<MapCell> stack = new LinkedList<>();
+//
+//        Position[][] positions = new Position[distance][];
+//        for (int y = 0; y < distance; ++y) {
+//            positions[y] = new Position[distance];
+//         }
+//         // хранить тут
+//         //position.halit - 2 * map.calculateDistance(startP, position) * Constants.MAX_HALITE / 10
+//         int[][] price = new int[distance][];
+//         for (int y = 0; y < distance; ++y) {
+//                     price[y] = new price[distance];
+//         }
+
+//         if(){}
+//     }
+// }
 
 public class Sumpose implements Comparable<Sumpose>
 {
