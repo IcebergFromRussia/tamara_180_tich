@@ -3,8 +3,6 @@
 
 import hlt.*;
 
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.*;
 
 public class MyBot {
@@ -17,6 +15,8 @@ public class MyBot {
         }
         //final Random rng = new Random(rngSeed);
 
+        final int dataGoHome = 1;
+
         Game game = new Game();
         // At this point "game" variable is populated with initial map data.
         // This is a good place to do computationally expensive start-up pre-processing.
@@ -25,7 +25,7 @@ public class MyBot {
 
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
-        Map<EntityId, int> entityData = new Map<EntityId, int>();
+        HashMap<EntityId, Integer> entityData = new HashMap<EntityId, Integer>();
         final int distance = 7;
         final int minPrice;
         ArrayList<MapCell> reservedCells;
@@ -39,24 +39,25 @@ public class MyBot {
 
             for (final Ship ship : me.ships.values()) {
                 if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
-                    Direction direction;
+                    Direction direction = null;
 //                    commandQueue.add(ship.move(randomDirection));
 
                     Log.log("Проверка корабля");
-                    Data = entityData.getOrDefault(ship.EntityId, null);
-                    if (Data != null)
+                    Integer Data = entityData.getOrDefault(ship.id, null);
+                    if (Data == null)
                     {
-                        entityData.put(ship.EntityId, new Data());
+                        entityData.put(ship.id, dataGoHome);
+                        Data = dataGoHome;
                     }
-                    switch (Data.State)
+                    switch (Data)
                     {
-                        case 1:
+                        case dataGoHome:
                         {
                             if(ship.halite > Constants.MAX_HALITE * 0.7){
-                                Data.State = 2;
+                                Data = 2; //nen
                                 Log.log("иди домой");
                             }
-                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE * 0.3);
+                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3);
                             if(targetCell.position.equals(ship.position)){
                                 commandQueue.add(ship.stayStill());
                                 continue;
@@ -67,8 +68,7 @@ public class MyBot {
                                     commandQueue.add(ship.stayStill());
                                     continue;
                                 }
-                                reservedCells.add(ship.position.directionalOffset(direction));
-                                reservedCells.add(nPosition);
+                                reservedCells.add(gameMap.at(nPosition));
                             }
                         }
                         break;
@@ -77,14 +77,11 @@ public class MyBot {
                             direction = gameMap.naiveNavigate(ship, me.shipyard.position);
                         }
                         break;
-                        case 0:
-                        {
-
-                        }
-                        break;
                     }
+                    if(direction != null){
 
-                    commandQueue.add(ship.move(direction));
+                        commandQueue.add(ship.move(direction));
+                    }
                 } else {
                     commandQueue.add(ship.stayStill());
                 }
@@ -104,11 +101,11 @@ public class MyBot {
 
     public static boolean isReserved(ArrayList<MapCell> cells, Position position){
         for (final MapCell cell : cells) {
-            if(position.equeal(cell)){
+            if(position.equals(cell.position)){
                 return true;
             }
         }
-        false;
+        return false;
     }
 
 //    public static int getFildSum(Position pose, GameMap map, int height, int width)
@@ -145,16 +142,18 @@ public class MyBot {
 
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
         LinkedList<MapCell> nearCells = new LinkedList<>();
-        for (final MapCell cell : map.cells) {
-            if(map.calculateDistance(cell.position, entity.position) < distance){
-                nearCells.add(cell);
+        for (final MapCell[] cell1 : map.cells) {
+            for (final MapCell cell : cell1) {
+                if (map.calculateDistance(cell.position, entity.position) < distance) {
+                    nearCells.add(cell);
+                }
             }
         }
         return nearCells;
     }
 
-    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, int price){
-        MapCell maxCell;
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, double price){
+        MapCell maxCell = null;
         final GameMap gameMap = game.gameMap;
         for (final MapCell cell : cells) {
             if(maxCell == null){
@@ -184,10 +183,10 @@ public class MyBot {
 //         if(){}
 //     }
 
-    public LocalPlaner()
-    {
-
-    }
+//    public LocalPlaner()
+//    {
+//
+//    }
 }
 
 //public class Sumpose implements Comparable<Sumpose>
