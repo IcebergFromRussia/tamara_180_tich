@@ -4,9 +4,7 @@
 import hlt.*;
 
 import java.util.*;
-import java.lang.Object
-import java.util.AbstractMap<K,V>
-import java.util.TreeMap<K,V>
+import java.lang.Object;
 
 public class MyBot {
     public static void main(final String[] args) {
@@ -33,7 +31,7 @@ public class MyBot {
         HashMap<String, Position> targetData1 = new HashMap<String, Position>();
 
         final int distance = 13;
-        final int minPrice = 20;
+        final int minPrice = 100;
         ArrayList<MapCell> reservedCells;
         ArrayList<MapCell> targetCells;
         for (;;) {
@@ -61,11 +59,12 @@ public class MyBot {
                     }
                     Log.log("состояние" + Data);
 
-                    targetPosition = targetData1.getKey(ship.position)
+//                    targetPosition = targetData1.getKey(ship.position);
                     switch (Data)
                     {
                         case goHome:
                         {
+                            Log.log("иду домой" + Data);
                             if(! me.shipyard.position.equals(ship.position))
                             {
                                 direction = gameMap.naiveNavigate(ship, me.shipyard.position);
@@ -74,15 +73,34 @@ public class MyBot {
                                 if(isReserved(reservedCells, nPosition)){
                                     commandQueue.add(ship.stayStill());
                                     entityData2.put(getPosKey(ship.position), goHome);
-                                    targetData2.put(getPosKey(ship.position), direction);
+                                    targetData2.put(getPosKey(ship.position), me.shipyard.position);
                                     Log.log("стоять на месте" + getPosKey(ship.position));
                                     continue;
                                 }
+                                if(! gameMap.at(nPosition).isOccupied()){
+                                    final Direction randomDirection = Direction.ALL_CARDINALS.get(rng.nextInt(4));
+                                    nPosition = ship.position.directionalOffset(randomDirection);
+                                    if(!gameMap.at(nPosition).isOccupied() || isReserved(reservedCells, nPosition)){
+                                        commandQueue.add(ship.stayStill());
+                                        entityData2.put(getPosKey(ship.position), goHome);
+                                        targetData2.put(getPosKey(nPosition), me.shipyard.position);
 
-                                Log.log("идти домой" + getPosKey(nPosition));
+                                        Log.log("стоять на месте" + getPosKey(ship.position));
+                                        continue;
+                                    }
+                                    commandQueue.add(ship.move(randomDirection));
+                                    reservedCells.add(gameMap.at(nPosition));
+                                    Log.log("случайная позиция" + getPosKey(nPosition));
+                                    //случайная позиция
+                                    entityData2.put(getPosKey(nPosition), goHome);
+                                    targetData2.put(getPosKey(nPosition), me.shipyard.position);
+                                    continue;
+                                }
+
+                                Log.log("идти домой" + getPosKey(ship.position));
                                 reservedCells.add(gameMap.at(nPosition));
                                 entityData2.put(getPosKey(nPosition), goHome);
-                                targetData2.put(getPosKey(nPosition), direction);
+                                targetData2.put(getPosKey(nPosition), me.shipyard.position);
                                 commandQueue.add(ship.move(direction));
 
                                 continue;
@@ -92,24 +110,27 @@ public class MyBot {
                         break;
                         case goForHalite:
                         {
-
+                            Log.log("ищу Халиты" + Data);
                             Integer state = 1;
                             if(ship.halite > Constants.MAX_HALITE * 0.7){
                                 state = 2;
                                 Log.log("иди домой" + getPosKey(ship.position));
                             } else {
-                                if(gameMap.at(ship.position).halite > 200){
+                                if(gameMap.at(ship.position).halite > minPrice){
                                     Log.log("стоять на месте" + getPosKey(ship.position));
                                     commandQueue.add(ship.stayStill());
                                     entityData2.put(getPosKey(ship.position), state);
                                     continue;
                                 }
                             }
-                            MapCell targetCell = targetData1.getKey(ship.position);
-                            if (targetCell == null)
+                            MapCell targetCell;
+                            Position buffPosition = targetData1.get(ship.position);
+                            if (buffPosition == null)
                             {
                                 targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3, targetCells);
                                 targetCells.add(targetCell);
+                            } else {
+                                targetCell = gameMap.at(buffPosition);
                             }
 
                             if(targetCell.position.equals(ship.position)){
@@ -117,7 +138,7 @@ public class MyBot {
                                 Log.log("стоять на месте" + getPosKey(ship.position));
                                 commandQueue.add(ship.stayStill());
                                 entityData2.put(getPosKey(ship.position), state);
-                                targetData2.put(getPosKey(ship.position), targetCell);
+                                targetData2.put(getPosKey(ship.position), targetCell.position);
                                 continue;
                             } else {
                                 direction = gameMap.naiveNavigate(ship, targetCell.position);
@@ -133,7 +154,7 @@ public class MyBot {
                                         Log.log("случайная позиция" + getPosKey(nPosition));
                                         //случайная позиция
                                         entityData2.put(getPosKey(nPosition), state);
-                                        targetData2.put(getPosKey(nPosition), targetCell);
+                                        targetData2.put(getPosKey(nPosition), targetCell.position);
                                     }
                                     else
                                     {
@@ -141,7 +162,7 @@ public class MyBot {
                                         //стоять на месте
                                         commandQueue.add(ship.stayStill());
                                         entityData2.put(getPosKey(ship.position), state);
-                                        targetData2.put(getPosKey(ship.position), targetCell);
+                                        targetData2.put(getPosKey(ship.position), targetCell.position);
                                     }
                                     continue;
                                 }
@@ -149,7 +170,7 @@ public class MyBot {
                                 Log.log("двигаться в сторону таргета" + getPosKey(nPosition));
                                 Log.log("двигаться в сторону таргета" + getPosKey(targetCell.position));
                                 entityData2.put(getPosKey(nPosition), state);
-                                targetData2.put(getPosKey(nPosition), targetCell);
+                                targetData2.put(getPosKey(nPosition), targetCell.position);
                                 reservedCells.add(gameMap.at(nPosition));
                             }
                         }
@@ -172,7 +193,7 @@ public class MyBot {
             }
 //            entityData1 = new HashMap<String, Integer>();
             entityData1 = (HashMap<String, Integer>) entityData2.clone();
-            targetData1 = (HashMap<String, Integer>) targetData2.clone();
+            targetData1 = (HashMap<String, Position>) targetData2.clone();
 //            entityData2.clone();
 
             game.endTurn(commandQueue);
@@ -191,13 +212,30 @@ public class MyBot {
     public static String getPosKey(Position position){
         return position.x + "_" + position.y;
     }
-
-    public static TreeMap<int, Position> getCells(GameMap map, int height, int width)
+    public static int getFildSum(Position pose, GameMap map, int height, int width)
     {
-        TreeMap<int, Position> tm = new TreeMap<int, Position>();
-        for (int i = 0; map.width - 1; i++)
+        // x - width; y - height;
+        int x = pose.x - (width / 2);
+        int y = pose.y - (height / 2);
+        int sum = 0;
+        for (int i = x; i < x + width; i++)
         {
-            for (int j = 0; map.height - 1; j++)
+            for (int j = y; j < y + height; j++)
+            {
+                Position p = map.normalize(new Position(i, j));
+                MapCell mc = map.at(p);
+                sum = sum + mc.halite;
+            }
+        }
+        return sum;
+    }
+
+    public static TreeMap<Integer, Position> getCells(GameMap map, int height, int width)
+    {
+        TreeMap<Integer, Position> tm = new TreeMap<Integer, Position>();
+        for (int i = 0; map.width > i; i++)
+        {
+            for (int j = 0; map.height > j; j++)
             {
                 Position p = new Position(i, j);
                 tm.put(getFildSum(p, map, height, width), p);
