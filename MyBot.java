@@ -44,7 +44,7 @@ public class MyBot {
                     Data = entityData.getOrDefault(ship.EntityId, null);
                     if (Data != null)
                     {
-                        entityData.put(ship.EntityId, new Data())
+                        entityData.put(ship.EntityId, new Data());
                     }
                     switch (Data.State)
                     {
@@ -177,9 +177,9 @@ public class Sumpose implements Comparable<Sumpose>
 
 public enum ShipState
 {
-    NEW(0),
-    MINING(1),
-    GO_HOME(2)
+    NEW('0'),
+    MINING('1'),
+    GO_HOME('2');
 }
 
 public class Data
