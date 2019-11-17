@@ -26,7 +26,8 @@ public class MyBot {
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
         Map<EntityId, Data> entityData = new Map<EntityId, Data>();
-
+        final int distance = 7;
+        final int minPrice
         for (;;) {
             game.updateFrame();
             final Player me = game.me;
@@ -36,34 +37,36 @@ public class MyBot {
 
             for (final Ship ship : me.ships.values()) {
                 if (gameMap.at(ship).halite < Constants.MAX_HALITE / 10 || ship.isFull()) {
-                    final Direction randomDirection = Direction.ALL_CARDINALS.get(rng.nextInt(4));
-                    commandQueue.add(ship.move(randomDirection));
+                    Direction direction;
+//                    commandQueue.add(ship.move(randomDirection));
 
 
                     Data = entityData.getOrDefault(ship.EntityId, null);
                     if (Data != null)
                     {
-                        switch (Data.State)
+                        entityData.put(ship.EntityId, new Data())
+                    }
+                    switch (Data.State)
+                    {
+                        case MINING:
                         {
-                            case MINING:
-                            {
-
-                            }
-                            break;
-                            case GO_HOME:
-                            {
-
-                            }
-                            break;
-                            case NEW:
-                            {
-
-                            }
-                            break;
+                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE / 30);
+                            direction = gameMap.naiveNavigate(ship, targetCell.position);
                         }
+                        break;
+                        case GO_HOME:
+                        {
+
+                        }
+                        break;
+                        case NEW:
+                        {
+
+                        }
+                        break;
                     }
 
-
+                    commandQueue.add(ship.move(direction));
                 } else {
                     commandQueue.add(ship.stayStill());
                 }
@@ -123,14 +126,14 @@ public class MyBot {
         return nearCells;
     }
 
-    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Position base, min price){
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, min price){
         MapCell maxCell;
         final GameMap gameMap = game.gameMap
         for (final MapCell cell : cells) {
             if(maxCell == null){
                 maxCell = cell;
             }
-            if(cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base, ship.position) * Constants.MAX_HALITE / 10){
+            if(cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base.position, ship.position) * Constants.MAX_HALITE / 10){
                 maxCell = cell;
             }
         }
@@ -153,7 +156,7 @@ public class MyBot {
 
 //         if(){}
 //     }
-// }
+}
 
 public class Sumpose implements Comparable<Sumpose>
 {
@@ -181,6 +184,9 @@ public enum ShipState
 
 public class Data
 {
-    public int State = NEW;
-}
+    public int State;
 
+    public Data(){
+        State = MINING;
+    }
+}
