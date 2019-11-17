@@ -36,6 +36,7 @@ public class MyBot {
             final Player me = game.me;
             final GameMap gameMap = game.gameMap;
             reservedCells = new ArrayList<>();
+            targetCells = new ArrayList<>();
 
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
