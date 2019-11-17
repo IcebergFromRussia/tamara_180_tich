@@ -26,6 +26,7 @@ public class MyBot {
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
         HashMap<EntityId, Integer> entityData = new HashMap<EntityId, Integer>();
+        HashMap<EntityId, Position> entityPosition = new HashMap<EntityId, Position>();
         final int distance = 7;
         final int minPrice;
         ArrayList<MapCell> reservedCells;
@@ -69,6 +70,7 @@ public class MyBot {
                                     continue;
                                 }
                                 reservedCells.add(gameMap.at(nPosition));
+                                entityPosition.put(ship.id, position);
                             }
                         }
                         break;
@@ -108,23 +110,23 @@ public class MyBot {
         return false;
     }
 
-//    public static int getFildSum(Position pose, GameMap map, int height, int width)
-//    {
-//        // x - width; y - height;
-//        int x = pose.x - (width / 2);
-//        int y = pose.y - (height / 2);
-//        int sum = 0;
-//        for (int i = x; x + width; i++)
-//        {
-//            for (int j = y; y + height; j++)
-//            {
-//                Position p = map.normalize(new Position(i, j));
-//                MapCell mc = map.at(p);
-//                sum = sum + mc.halite;
-//            }
-//        }
-//        return sum;
-//    }
+    public static int getFildSum(Position pose, GameMap map, int height, int width)
+    {
+        // x - width; y - height;
+        int x = pose.x - (width / 2);
+        int y = pose.y - (height / 2);
+        int sum = 0;
+        for (int i = x; x + width; i++)
+        {
+            for (int j = y; y + height; j++)
+            {
+                Position p = map.normalize(new Position(i, j));
+                MapCell mc = map.at(p);
+                sum = sum + mc.halite;
+            }
+        }
+        return sum;
+    }
 
 //    public static SortedSet<Sumpose> getCells(GameMap map, int height, int width)
 //    {
@@ -140,6 +142,8 @@ public class MyBot {
 //        return ss;
 //    }
 
+
+
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
         LinkedList<MapCell> nearCells = new LinkedList<>();
         for (final MapCell[] cell1 : map.cells) {
@@ -152,15 +156,17 @@ public class MyBot {
         return nearCells;
     }
 
-    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, double price){
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, double price, HashMap<EntityId, Position> entityPosition){
         MapCell maxCell = null;
         final GameMap gameMap = game.gameMap;
         for (final MapCell cell : cells) {
-            if(maxCell == null){
-                maxCell = cell;
-            }
-            if(cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base.position, ship.position) * Constants.MAX_HALITE / 10){
-                maxCell = cell;
+            if (!entityPosition.containsValue(cell)) {
+                if (maxCell == null) {
+                    maxCell = cell;
+                }
+                if (cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base.position, ship.position) * Constants.MAX_HALITE / 10) {
+                    maxCell = cell;
+                }
             }
         }
         return maxCell;
