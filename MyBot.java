@@ -50,13 +50,21 @@ public class MyBot {
                     {
                         case MINING:
                         {
-                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE / 30);
-                            direction = gameMap.naiveNavigate(ship, targetCell.position);
+                            if(ship.halite > Constants.MAX_HALITE * 07){
+                                Data.State = GO_HOME;
+                            }
+                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE * 0.3);
+                            if(targetCell.position.equals(ship.position)){
+                                commandQueue.add(ship.stayStill());
+                                continue;
+                            } else {
+                                direction = gameMap.naiveNavigate(ship, targetCell.position);
+                            }
                         }
                         break;
                         case GO_HOME:
                         {
-
+                            direction = gameMap.naiveNavigate(ship, me.shipyard.position);
                         }
                         break;
                         case NEW:
