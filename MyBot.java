@@ -25,7 +25,7 @@ public class MyBot {
 
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
-        Map<EntityId, Data> entityData = new Map<EntityId, Data>();
+        Map<EntityId, int> entityData = new Map<EntityId, int>();
         final int distance = 7;
         final int minPrice;
         ArrayList<MapCell> reservedCells;
@@ -50,10 +50,10 @@ public class MyBot {
                     }
                     switch (Data.State)
                     {
-                        case MINING:
+                        case 1:
                         {
                             if(ship.halite > Constants.MAX_HALITE * 0.7){
-                                Data.State = GO_HOME;
+                                Data.State = 2;
                                 Log.log("иди домой");
                             }
                             MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard, Constants.MAX_HALITE * 0.3);
@@ -72,12 +72,12 @@ public class MyBot {
                             }
                         }
                         break;
-                        case GO_HOME:
+                        case 2:
                         {
                             direction = gameMap.naiveNavigate(ship, me.shipyard.position);
                         }
                         break;
-                        case NEW:
+                        case 0:
                         {
 
                         }
@@ -186,7 +186,7 @@ public class MyBot {
 
     public LocalPlaner()
     {
-        
+
     }
 }
 
@@ -206,29 +206,3 @@ public class MyBot {
 //        return sp.sum - sum;
 //    }
 //}
-
-public enum ShipState
-{
-    NEW("0"),
-    MINING("1"),
-    GO_HOME("2");
-
-    private String title;
-
-    ShipState(String title) {
-        this.title = title;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-}
-
-public class Data
-{
-    public int State;
-
-    public Data(){
-        State = MINING;
-    }
-}
