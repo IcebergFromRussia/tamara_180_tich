@@ -5,6 +5,7 @@ import hlt.*;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.SortedSet;
 
 public class MyBot {
     public static void main(final String[] args) {
@@ -52,6 +53,38 @@ public class MyBot {
         }
     }
 
+    public static int getFildSum(Position pose, GameMap map, int height, int width)
+    {
+        // x - width; y - height;
+        int x = pose.x - (width / 2);
+        int y = pose.y - (height / 2);
+        int sum = 0;
+        for (int i = x; x + width; i++)
+        {
+            for (int j = y; y + height; j++)
+            {
+                Position p = map.normalize(new Position(i, j));
+                MapCell mc = map.at(p);
+                sum = sum + mc.halite;
+            }
+        }
+        return sum;
+    }
+
+    public static SortedSet<Sumpose> getCells(GameMap map, int height, int width)
+    {
+        SortedSet<Sumpose> ss = new SortedSet<Sumpose>();
+        for (int i = 0; map.width - 1; i++)
+        {
+            for (int j = 0; map.height - 1; j++)
+            {
+                Position p = new Position(i, j);
+                ss.Add(new Sumpose(getFildSum(p, map, height, width), p);
+            }
+        }
+        return ss;
+    }
+
     public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
         ArrayList<cell> nearCells = new ArrayList<>();
         for (final MapCell cell : map.cells) {
@@ -60,5 +93,22 @@ public class MyBot {
             }
         }
         return nearCells;
+    }
+}
+
+public class Sumpose implements Comparable<Sumpose>
+{
+    public int sum = 0;
+    public Position pose = null;
+
+    public Sumpose(int sum, Position pose)
+    {
+        this.sum = sum;
+        this.pose = pose;
+    }
+
+    public int compareTo(Sumpose sp)
+    {
+        return sp.sum - sum;
     }
 }
