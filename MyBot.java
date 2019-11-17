@@ -27,16 +27,15 @@ public class MyBot {
         Log.log("Successfully created bot! My Player ID is " + game.myId + ". Bot rng seed is " + rngSeed + ".");
 
         HashMap<EntityId, Integer> entityData = new HashMap<EntityId, Integer>();
-        HashMap<EntityId, Position> entityPosition = new HashMap<EntityId, Position>();
         final int distance = 13;
         final int minPrice = 20;
         ArrayList<MapCell> reservedCells;
+        ArrayList<MapCell> targetCells;
         for (;;) {
             game.updateFrame();
             final Player me = game.me;
             final GameMap gameMap = game.gameMap;
             reservedCells = new ArrayList<>();
-            entityPosition = new HashMap<EntityId, Position>();
 
             final ArrayList<Command> commandQueue = new ArrayList<>();
 
@@ -74,7 +73,8 @@ public class MyBot {
                                 entityData.put(ship.id, goHome);
                                 Log.log("иди домой");
                             }
-                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3, entityPosition);
+                            MapCell targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), ship, game, me.shipyard,  Constants.MAX_HALITE * 0.3, targetCells);
+                            targetCells.add(targetCell);
                             if(targetCell.position.equals(ship.position)){
                                 commandQueue.add(ship.stayStill());
                                 continue;
@@ -93,7 +93,6 @@ public class MyBot {
                                     continue;
                                 }
                                 reservedCells.add(gameMap.at(nPosition));
-                                entityPosition.put(ship.id, nPosition);
                             }
                         }
                         break;
@@ -172,11 +171,11 @@ public class MyBot {
         return nearCells;
     }
 
-    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, double price, HashMap<EntityId, Position> entityPosition){
+    public static MapCell getTargetCell(List<MapCell> cells, Ship ship, Game game, Entity base, double price, ArrayList<MapCell> targetCells){
         MapCell maxCell = null;
         final GameMap gameMap = game.gameMap;
         for (final MapCell cell : cells) {
-            if (!entityPosition.containsValue(cell)) {
+            if (!targetCells.contains(cell)) {
                 if (maxCell == null) {
                     maxCell = cell;
                 }
