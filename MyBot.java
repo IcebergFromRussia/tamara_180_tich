@@ -51,4 +51,14 @@ public class MyBot {
             game.endTurn(commandQueue);
         }
     }
+
+    public static List<MapCell> getNearCells(int distance, Entity entity, GameMap map){
+        ArrayList<cell> nearCells = new ArrayList<>();
+        for (final MapCell cell : map.cells) {
+            if(map.calculateDistance(cell.position, entity.position) > distance){
+                nearCells.add(cell);
+            }
+        }
+        return nearCells;
+    }
 }
