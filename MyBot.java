@@ -73,16 +73,32 @@ public class MyBot {
                                 direction = gameMap.naiveNavigate(ship, me.shipyard.position);
                                 Position nPosition = ship.position.directionalOffset(direction);
 
-                                if(isReserved(reservedCells, nPosition)){
-                                    commandQueue.add(ship.stayStill());
-                                    entityData2.put(getPosKey(ship.position), goHome);
-                                    targetData2.put(getPosKey(ship.position), me.shipyard.position);
-                                    Log.log("стоять на месте" + getPosKey(ship.position));
-                                    continue;
-                                }
-                                if(! gameMap.at(nPosition).isOccupied()){
-                                    final Direction randomDirection = Direction.ALL_CARDINALS.get(rng.nextInt(4));
+//                                if(){
+//                                    commandQueue.add(ship.stayStill());
+//                                    entityData2.put(getPosKey(ship.position), goHome);
+//                                    targetData2.put(getPosKey(ship.position), me.shipyard.position);
+//                                    Log.log("стоять на месте" + getPosKey(ship.position));
+//                                    continue;
+//                                }
+                                if(! gameMap.at(nPosition).isOccupied() || isReserved(reservedCells, nPosition)){
+                                    Direction randomDirection;
+
+                                    randomDirection = Direction.ALL_CARDINALS.get(1);
                                     nPosition = ship.position.directionalOffset(randomDirection);
+
+                                    if(isReserved(reservedCells, nPosition) || ! gameMap.at(nPosition).isOccupied() ){
+                                        randomDirection = Direction.ALL_CARDINALS.get(2);
+                                        nPosition = ship.position.directionalOffset(randomDirection);
+                                    }
+                                    if(isReserved(reservedCells, nPosition) || ! gameMap.at(nPosition).isOccupied() ){
+                                        randomDirection = Direction.ALL_CARDINALS.get(3);
+                                        nPosition = ship.position.directionalOffset(randomDirection);
+                                    }
+                                    if(isReserved(reservedCells, nPosition) || ! gameMap.at(nPosition).isOccupied() ){
+                                        randomDirection = Direction.ALL_CARDINALS.get(4);
+                                        nPosition = ship.position.directionalOffset(randomDirection);
+                                    }
+
                                     if(gameMap.at(nPosition).isOccupied() || isReserved(reservedCells, nPosition)){
                                         commandQueue.add(ship.stayStill());
                                         entityData2.put(getPosKey(ship.position), goHome);
@@ -119,7 +135,7 @@ public class MyBot {
                             Position buffPosition = targetData1.get(ship.position);
                             if (buffPosition == null)
                             {
-                                targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), me.shipyard, game, me.shipyard,  Constants.MAX_HALITE * 0.3, targetCells);
+                                targetCell = getTargetCell(getNearCells(distance, me.shipyard, gameMap), me.shipyard, game, me.shipyard,  minPrice, targetCells);
                                 targetCells.add(targetCell);
                             } else {
                                 targetCell = gameMap.at(buffPosition);
@@ -130,7 +146,7 @@ public class MyBot {
 //                                state = 2;
 //                                Log.log("ВСЕ ДОМОЙ");
 //                            }
-                            if(ship.halite > Constants.MAX_HALITE * 0.7){
+                            if(ship.halite > Constants.MAX_HALITE * 0.9){
                                 state = 2;
                                 Log.log("иди домой" + getPosKey(ship.position));
                             } else {
@@ -289,7 +305,7 @@ public class MyBot {
                 if (maxCell == null) {
                     maxCell = cell;
                 }
-                if (cell.halite > price && cell.halite > maxCell.halite - gameMap.calculateDistance(base.position, ship.position) * Constants.MAX_HALITE / 10) {
+                if (cell.halite > price && cell.halite > maxCell.halite) {
                     maxCell = cell;
                 }
             }
